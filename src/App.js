@@ -1,14 +1,11 @@
-import "./App.css";
-import Header from "./compontents/Header";
-import Button from "./compontents/Button";
+import AppContainer from "./compontents/AppContainer";
 
 function App() {
     return (
         <>
-            <Header />
-            <main>MAIN CONTENT</main>
-            <Button>Klyknyj!</Button>
-            <footer>FOOTER</footer>
+            <div className="flex justify-center items-center h-screen">
+                <AppContainer />
+            </div>
         </>
     );
 }
