@@ -39,7 +39,7 @@ export default function Checkbox({ label }) {
                 )}
             </div>
             {label && (
-                <h4 className="text-lg font-semibold text-gray-300 peer-hover:text-white transition-colors ml-2">
+                <h4 contentEditable="true" className="text-lg font-semibold text-gray-300 peer-hover:text-white transition-colors ml-2">
                     {label}
                 </h4>
             )}

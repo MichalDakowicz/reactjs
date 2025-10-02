@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+* {
+    @apply m-0 p-0 box-border;
+    font-family: "Nunito", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: "JetBrains Mono", monospace;
+}
+
 body {
     @apply bg-neutral-950 text-zinc-200;
 }
@@ -11,28 +25,32 @@ h1 {
 }
 
 .app-container {
-    @apply items-center;
+    @apply items-center w-full;
     ul {
-        @apply list-none flex gap-2 justify-around flex-col;
+        @apply list-none flex gap-2 justify-around flex-col w-2/3;
         li {
-            @apply min-w-64 text-xl px-2 py-2 rounded-md transition-all ease-in-out duration-150 border border-neutral-500  bg-neutral-900 hover:bg-neutral-600;
+            @apply min-w-96 text-xl rounded-md transition-all ease-in-out duration-150 border-2 flex flex-row border-gray-500  bg-neutral-950 hover:bg-neutral-700;
 
-            div {
-                @apply flex gap-2 items-center;
+            input[type="checkbox"] {
+                @apply w-4 h-4;
+            }
 
-                input[type="checkbox"] {
-                    @apply w-4 h-4;
-                }
+            h4 {
+                @apply font-semibold text-2xl;
+            }
 
-                h4 {
-                    @apply font-semibold text-2xl;
-                }
+            #note-info {
+                @apply flex flex-col p-2;
+            }
 
-                button {
-                    @apply ml-auto transition-all ease-in-out duration-150 hover:text-red-600;
-                    svg {
-                        @apply w-6 h-6;
-                    }
+            #delete-button {
+                @apply flex flex-col justify-around ml-auto transition-all ease-in-out duration-150 p-2 hover:bg-red-600;
+
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+
+                svg {
+                    @apply w-6 h-6;
                 }
             }
         }

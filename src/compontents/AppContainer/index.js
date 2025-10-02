@@ -8,13 +8,13 @@ const AppContainer = () => {
             <ul>
                 {[1, 2, 3, 4].map((item) => (
                     <li key={item}>
-                        <div>
+                        <div id="note-info">
                             <Checkbox label={`Element ${item}`} />
-                            <button type="button">
-                                <TbTrash />
-                            </button>
+                            <p contentEditable="true">{`Description for Element ${item}`}</p>
                         </div>
-                        <p>{`Description for Element ${item}`}</p>
+                        <button type="button" id="delete-button">
+                            <TbTrash />
+                        </button>
                     </li>
                 ))}
             </ul>
