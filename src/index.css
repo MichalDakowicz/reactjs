@@ -40,7 +40,7 @@ h1 {
             }
 
             #note-info {
-                @apply flex flex-col p-2;
+                @apply flex flex-col p-2 transition-all duration-150 ease-in-out;
             }
 
             #delete-button {
@@ -53,6 +53,27 @@ h1 {
                     @apply w-6 h-6;
                 }
             }
+        }
+    }
+}
+
+.completed {
+    @apply border-neutral-800 hover:bg-neutral-900 !important;
+    #note-info {
+        h4 {
+            @apply line-through text-gray-400;
+        }
+        p {
+            @apply text-gray-500;
+        }
+    }
+    #delete-button {
+        @apply hover:bg-red-800 !important;
+        svg {
+            @apply text-gray-600;
+        }
+        &:hover svg {
+            @apply text-white;
         }
     }
 }

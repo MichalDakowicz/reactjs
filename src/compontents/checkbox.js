@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function Checkbox({ label }) {
-    const [checked, setChecked] = useState(false);
+export default function Checkbox({
+    label,
+    state,
+    isContentEditable,
+    onChange,
+    onContentEdit,
+}) {
+    const [checked, setChecked] = useState(state || false);
+
+    useEffect(() => {
+        setChecked(state || false);
+    }, [state]);
 
     return (
         <label className="flex items-center cursor-pointer">
             <input
                 type="checkbox"
                 checked={checked}
-                onChange={() => setChecked(!checked)}
+                onChange={(e) => {
+                    const newChecked = e.target.checked;
+                    setChecked(newChecked);
+                    onChange && onChange(newChecked);
+                }}
                 className="peer hidden"
             />
             <div
@@ -33,13 +47,26 @@ export default function Checkbox({ label }) {
                         xmlSpace="preserve"
                     >
                         <g>
-                            <path fill="currentColor" d="M462.5,96.193l-21.726-21.726c-8.951-8.95-23.562-8.95-32.59,0L180.368,302.361l-119.34-119.34 c-8.95-8.951-23.562-8.951-32.589,0L6.712,204.747c-8.95,8.951-8.95,23.562,0,32.589L163.997,394.62 c4.514,4.514,10.327,6.809,16.218,6.809s11.781-2.295,16.219-6.809L462.27,128.783C471.45,119.68,471.45,105.145,462.5,96.193z" />
+                            <path
+                                fill="currentColor"
+                                d="M462.5,96.193l-21.726-21.726c-8.951-8.95-23.562-8.95-32.59,0L180.368,302.361l-119.34-119.34 c-8.95-8.951-23.562-8.951-32.589,0L6.712,204.747c-8.95,8.951-8.95,23.562,0,32.589L163.997,394.62 c4.514,4.514,10.327,6.809,16.218,6.809s11.781-2.295,16.219-6.809L462.27,128.783C471.45,119.68,471.45,105.145,462.5,96.193z"
+                            />
                         </g>
                     </svg>
                 )}
             </div>
             {label && (
-                <h4 contentEditable="true" className="text-lg font-semibold text-gray-300 peer-hover:text-white transition-colors ml-2">
+                <h4
+                    contentEditable={isContentEditable || false}
+                    className="text-lg font-semibold text-gray-300 peer-hover:text-white transition-colors ml-2"
+                    onBlur={onContentEdit}
+                    onClick={(e) => {
+                        if (isContentEditable) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }}
+                >
                     {label}
                 </h4>
             )}
