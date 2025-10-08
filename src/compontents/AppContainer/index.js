@@ -1,112 +1,86 @@
 import { useState, useEffect } from "react";
 
-import uuid from "react-uuid";
-
 import { TbTrash } from "react-icons/tb";
 import { TbPlus } from "react-icons/tb";
 import Checkbox from "../checkbox";
 import InputGroup from "../inputgroup";
+import Modal from "../modal";
 
 export default function AppContainer() {
-    const [todos, setTodos] = useState(
-        () => JSON.parse(localStorage.getItem("todos")) || {}
-    );
+    const [todos, setTodos] = useState(() => {
+        const stored = JSON.parse(localStorage.getItem("todos")) || [];
+        if (Array.isArray(stored)) return stored;
+        return Object.entries(stored).map(
+            ([id, [title, description, completed]]) => {
+                return { id, title, description, completed };
+            }
+        );
+    });
 
     useEffect(() => {
         localStorage.setItem("todos", JSON.stringify(todos));
     }, [todos]);
 
-    const reorderTodos = () => {
-        const completed = [];
-        const notCompleted = [];
-        Object.entries(todos).forEach(([id, todo]) => {
-            if (todo[2]) {
-                completed.push([id, todo]);
-            } else {
-                notCompleted.push([id, todo]);
-            }
-        });
-        const reordered = [...notCompleted, ...completed];
-        const newTodos = {};
-        reordered.forEach(([id, todo]) => {
-            newTodos[id] = todo;
-        });
-        setTodos(newTodos);
-    };
-
-    const newTodo = (title) => {
-        if (!title || !title.trim()) return;
-        const id = uuid();
-        const completed = [];
-        const notCompleted = [];
-        Object.entries(todos).forEach(([id, todo]) => {
-            if (todo[2]) {
-                completed.push([id, todo]);
-            } else {
-                notCompleted.push([id, todo]);
-            }
-        });
-        const reordered = [
-            ...notCompleted,
-            [id, [title, "Description (click to edit)", false]],
-            ...completed,
-        ];
-        const newTodos = {};
-        reordered.forEach(([id, todo]) => {
-            newTodos[id] = todo;
-        });
-        setTodos(newTodos);
-        const input = document.getElementById("add-note");
-        if (input) input.value = "";
+    const reorderTodos = (list) => {
+        const completed = list.filter((todo) => todo.completed);
+        const notCompleted = list.filter((todo) => !todo.completed);
+        return [...notCompleted, ...completed];
     };
 
     const deleteTodo = (id) => {
         setTodos((prevTodos) => {
-            const next = { ...prevTodos };
-            delete next[id];
-            return next;
+            return prevTodos.filter((todo) => todo.id !== id);
         });
+    };
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [todoToDeleteId, setTodoToDeleteId] = useState(null);
+    const [todoToDeleteTitle, setTodoToDeleteTitle] = useState("");
+
+    const openDeleteModal = (id, title) => {
+        setTodoToDeleteId(id);
+        setTodoToDeleteTitle(title || "");
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setTodoToDeleteId(null);
+        setTodoToDeleteTitle("");
+    };
+
+    const handleConfirmDelete = () => {
+        if (todoToDeleteId) {
+            deleteTodo(todoToDeleteId);
+        }
+        closeModal();
     };
 
     const handleDescriptionChange = (id, newDescription) => {
         setTodos((prevTodos) => {
-            const next = { ...prevTodos };
-            if (next[id]) {
-                next[id][1] = newDescription;
-            }
-            return next;
+            const updated = prevTodos.map((todo) =>
+                todo.id === id ? { ...todo, description: newDescription } : todo
+            );
+            return reorderTodos(updated);
         });
-        reorderTodos();
     };
 
     const handleCheckboxClick = (id, newState) => {
         setTodos((prevTodos) => {
-            const next = { ...prevTodos };
-            if (next[id]) {
-                next[id][2] = newState;
-            }
-            return next;
+            const updated = prevTodos.map((todo) =>
+                todo.id === id ? { ...todo, completed: newState } : todo
+            );
+            return reorderTodos(updated);
         });
-        reorderTodos();
-        const liElement = document.querySelector(`li[key='${id}']`);
-        if (liElement) {
-            if (newState) {
-                liElement.classList.add("completed");
-            } else {
-                liElement.classList.remove("completed");
-            }
-        }
     };
 
     const handleTitleChange = (id, newTitle) => {
         setTodos((prevTodos) => {
-            const next = { ...prevTodos };
-            if (next[id]) {
-                next[id][0] = newTitle;
-            }
-            return next;
+            const updated = prevTodos.map((todo) =>
+                todo.id === id ? { ...todo, title: newTitle } : todo
+            );
+            return reorderTodos(updated);
         });
-        reorderTodos();
     };
 
     return (
@@ -116,16 +90,16 @@ export default function AppContainer() {
                 placeholder="Add new note..."
                 Icon={TbPlus}
                 buttonText="Add"
-                onClick={() => {
-                    newTodo(document.getElementById("add-note").value);
-                }}
-                id="add-note"
+                todos={todos}
+                setTodos={setTodos}
             />
             <ul>
-                {Object.entries(todos).map(
-                    ([id, [title, description, completed]]) => (
+                {todos.map((todo) => {
+                    const { id, title, description, completed } = todo;
+                    return (
                         <li
                             key={id}
+                            data-id={id}
                             className={`${completed ? "completed" : ""}`}
                         >
                             <div id="note-info">
@@ -159,14 +133,21 @@ export default function AppContainer() {
                             <button
                                 type="button"
                                 id="delete-button"
-                                onClick={() => deleteTodo(id)}
+                                onClick={() => openDeleteModal(id, title)}
                             >
                                 <TbTrash />
                             </button>
                         </li>
-                    )
-                )}
+                    );
+                })}
             </ul>
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={"Confirm delete"}
+                description={`Are you sure you want to delete "${todoToDeleteTitle}"? This action cannot be undone.`}
+                onConfirm={handleConfirmDelete}
+            />
         </div>
     );
 }

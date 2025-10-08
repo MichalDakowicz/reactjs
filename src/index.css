@@ -29,8 +29,7 @@ h1 {
     ul {
         @apply list-none flex gap-2 justify-around flex-col w-2/3;
         li {
-            @apply min-w-96 text-xl rounded-md transition-all ease-in-out duration-150 border-2 flex flex-row border-gray-500  bg-neutral-950 hover:bg-neutral-700;
-
+            @apply min-w-96 text-xl rounded-md transition-all ease-in-out duration-150 border-2 flex flex-row border-gray-500  bg-neutral-950 hover:bg-neutral-700 hover:scale-[1.01];
             input[type="checkbox"] {
                 @apply w-4 h-4;
             }
